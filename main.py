@@ -127,7 +127,6 @@ client = mqtt.Client()                                  # Initialisierung MQTT-C
 # >>> Funktionen [START] <<< -------------------------------------------------------------------------------------------
 
 # >>> multithreaded Funktionen
-# noinspection PyBroadException
 class mt:
     def ml_output_loop(self=None):
         while ml_output_on:
