@@ -210,7 +210,7 @@ class mt:
 
 # Ki Berechnungen, etc.
 class ML:
-    def prep_data(database_path="data/Sample-Database V1.csv", test_size=0.2, random_state=random.randint(1, 1000000)):
+    def prep_data(database_path="data/Sample-Database V1 (Sphere).csv", test_size=0.2, random_state=random.randint(1, 1000000)):
         data = pd.read_csv(database_path, sep=";")
 
         X = data.drop(columns=["#", "Material"]).values     # alles bis auf "Material"
