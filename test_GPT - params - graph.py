@@ -10,6 +10,7 @@ from sklearn.metrics import accuracy_score
 import os
 import random
 import time
+import os
 import matplotlib.pyplot as plt
 
 # Daten einlesen
@@ -21,12 +22,25 @@ X = data.drop(columns=["#", "Material"]).values # Features
 y = data['Material'].values                     # Zielvariable
 
 # Daten aufteilen
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 # Daten skalieren
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
+
+def test_data():
+    # Daten aufteilen
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+    # Daten skalieren
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    return X_train_scaled, X_test_scaled, y_train, y_test
+
+
 
 def get_accuracy_all():
     # Modelle definieren
@@ -385,7 +399,7 @@ def get_accuracy_nn8():
     plt.title('Durchschnittliche Genauigkeit von Neuronalen Netz-Modellen (SGD) mit verschiedenen Hyperparametern')
     plt.show()
 
-#10-500 Neronen
+# Anzahl Schichten
 def get_accuracy_nn9():
     # Neuronale Netz-Modelle mit verschiedenen Hyperparametern definieren
     nn_models_50 = {
@@ -441,57 +455,78 @@ def get_accuracy_nn9():
     }
 
     # Neuronale Netz-Modelle trainieren und bewerten
-    
     accuracy_scores_50 = []
     for name, model in nn_models_50.items():
-        model.fit(X_train_scaled, y_train)
-        y_pred = model.predict(X_test_scaled)
-        accuracy = accuracy_score(y_test, y_pred)
-        accuracy_scores_50.append(accuracy)
-        print(f'{name} Genauigkeit: {accuracy:.4f}')
-    
+        accuracies = []
+        for _ in range(10):
+            X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+            model.fit(X_train_scaled, y_train)
+            y_pred = model.predict(X_test_scaled)
+            accuracy = accuracy_score(y_test, y_pred)
+            accuracies.append(accuracy)
+        average_accuracy = np.mean(accuracies)
+        accuracy_scores_50.append(average_accuracy)
+        print(f'{name} Durchschnittliche Genauigkeit: {average_accuracy:.4f}')
+
     accuracy_scores_100 = []
     for name, model in nn_models_100.items():
-        model.fit(X_train_scaled, y_train)
-        y_pred = model.predict(X_test_scaled)
-        accuracy = accuracy_score(y_test, y_pred)
-        accuracy_scores_100.append(accuracy)
-        print(f'{name} Genauigkeit: {accuracy:.4f}')
-    
+        accuracies = []
+        for _ in range(10):
+            X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+            model.fit(X_train_scaled, y_train)
+            y_pred = model.predict(X_test_scaled)
+            accuracy = accuracy_score(y_test, y_pred)
+            accuracies.append(accuracy)
+        average_accuracy = np.mean(accuracies)
+        accuracy_scores_100.append(average_accuracy)
+        print(f'{name} Durchschnittliche Genauigkeit: {average_accuracy:.4f}')
+
     accuracy_scores_150 = []
     for name, model in nn_models_150.items():
-        model.fit(X_train_scaled, y_train)
-        y_pred = model.predict(X_test_scaled)
-        accuracy = accuracy_score(y_test, y_pred)
-        accuracy_scores_150.append(accuracy)
-        print(f'{name} Genauigkeit: {accuracy:.4f}')
+        accuracies = []
+        for _ in range(10):
+            X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+            model.fit(X_train_scaled, y_train)
+            y_pred = model.predict(X_test_scaled)
+            accuracy = accuracy_score(y_test, y_pred)
+            accuracies.append(accuracy)
+        average_accuracy = np.mean(accuracies)
+        accuracy_scores_150.append(average_accuracy)
+        print(f'{name} Durchschnittliche Genauigkeit: {average_accuracy:.4f}')
 
     accuracy_scores_200 = []
     for name, model in nn_models_200.items():
-        model.fit(X_train_scaled, y_train)
-        y_pred = model.predict(X_test_scaled)
-        accuracy = accuracy_score(y_test, y_pred)
-        accuracy_scores_200.append(accuracy)
-        print(f'{name} Genauigkeit: {accuracy:.4f}')
+        accuracies = []
+        for _ in range(10):
+            X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+            model.fit(X_train_scaled, y_train)
+            y_pred = model.predict(X_test_scaled)
+            accuracy = accuracy_score(y_test, y_pred)
+            accuracies.append(accuracy)
+        average_accuracy = np.mean(accuracies)
+        accuracy_scores_200.append(average_accuracy)
+        print(f'{name} Durchschnittliche Genauigkeit: {average_accuracy:.4f}')
 
     # Ergebnisse visualisieren
     plt.figure(figsize=(15, 6))
-    plt.plot(range(1,11), accuracy_scores_50, color='skyblue')
-    plt.plot(range(1,11), accuracy_scores_100, color='orange')
-    plt.plot(range(1,11), accuracy_scores_150, color='green')
-    plt.plot(range(1,11), accuracy_scores_200, color='purple')
+    plt.plot(range(1, 11), accuracy_scores_50, color='skyblue')
+    plt.plot(range(1, 11), accuracy_scores_100, color='orange')
+    plt.plot(range(1, 11), accuracy_scores_150, color='green')
+    plt.plot(range(1, 11), accuracy_scores_200, color='purple')
     plt.xticks(rotation=0)
     plt.xlabel('Anzahl der Schichten')
     plt.ylabel('Genauigkeit')
     plt.legend(['50 Neuronen', '100 Neuronen', '150 Neuronen', '200 Neuronen'])
-    plt.title('Vergleich von Neuronalen Netz-Modellen mit variierender Anzahl an Schichten')
-    #plt.show()
+    plt.title('Vergleich von Neuronalen Netz-Modellen mit variierender Anzahl an Schichten (x10)')
+    # plt.show()
 
     # Generate a random filename
     filename = f"plot_{int(time.time())}.png"
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop/Test_NN_Anzahl_Schichten")
+    if not os.path.exists(desktop_path):
+        os.makedirs(desktop_path)
     plt.savefig(os.path.join(desktop_path, filename))
-    
+
 
 
 
@@ -512,6 +547,8 @@ def get_accuracy_svm():
 
     # SVM-Modelle trainieren und bewerten
     accuracy_scores = []
+    X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+    
     for name, model in svm_models.items():
         model.fit(X_train_scaled, y_train)
         y_pred = model.predict(X_test_scaled)
@@ -527,6 +564,185 @@ def get_accuracy_svm():
     plt.title('SVM-Modellvergleich mit verschiedenen Hyperparametern')
     plt.show()
 
+# SVM (balanced/unbalanced)
+def get_accuracy_svm2():
+        
+    svm_models_standart = {
+        "SVM - C=0.1, linear": SVC(kernel='linear', C=0.1),
+        "SVM - C=1, linear": SVC(kernel='linear', C=1),
+        "SVM - C=10, linear": SVC(kernel='linear', C=10),
+        "SVM - C=0.1, rbf": SVC(kernel='rbf', C=0.1),
+        "SVM - C=1, rbf": SVC(kernel='rbf', C=1),
+        "SVM - C=10, rbf": SVC(kernel='rbf', C=10),
+        "SVM - C=0.1, poly": SVC(kernel='poly', C=0.1),
+        "SVM - C=1, poly": SVC(kernel='poly', C=1),
+        "SVM - C=10, poly": SVC(kernel='poly', C=10),
+        "SVM - C=0.1, sigmoid": SVC(kernel='sigmoid', C=0.1),
+        "SVM - C=1, sigmoid": SVC(kernel='sigmoid', C=1),
+        "SVM - C=10, sigmoid": SVC(kernel='sigmoid', C=10)
+        }
+    
+    svm_models_balanced = {
+        "SVM - C=0.1, linear": SVC(kernel='linear', C=0.1, class_weight='balanced'),
+        "SVM - C=1, linear": SVC(kernel='linear', C=1, class_weight='balanced'),
+        "SVM - C=10, linear": SVC(kernel='linear', C=10, class_weight='balanced'),
+        "SVM - C=0.1, rbf": SVC(kernel='rbf', C=0.1, class_weight='balanced'),
+        "SVM - C=1, rbf": SVC(kernel='rbf', C=1, class_weight='balanced'),
+        "SVM - C=10, rbf": SVC(kernel='rbf', C=10, class_weight='balanced'),
+        "SVM - C=0.1, poly": SVC(kernel='poly', C=0.1, class_weight='balanced'),
+        "SVM - C=1, poly": SVC(kernel='poly', C=1, class_weight='balanced'),
+        "SVM - C=10, poly": SVC(kernel='poly', C=10, class_weight='balanced'),
+        "SVM - C=0.1, sigmoid": SVC(kernel='sigmoid', C=0.1, class_weight='balanced'),
+        "SVM - C=1, sigmoid": SVC(kernel='sigmoid', C=1, class_weight='balanced'),
+        "SVM - C=10, sigmoid": SVC(kernel='sigmoid', C=10, class_weight='balanced')
+    }
+
+    # Neuronale Netz-Modelle trainieren und bewerten
+
+    accuracy_scores = [[],[]]
+    X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+    
+    for name, model in svm_models_standart.items():
+        model.fit(X_train_scaled, y_train)
+        y_pred = model.predict(X_test_scaled)
+        accuracy = accuracy_score(y_test, y_pred)
+        accuracy_scores[0].append(accuracy)
+        print(f'{name} Genauigkeit: {accuracy:.4f}')
+
+    for name, model in svm_models_balanced.items():
+        model.fit(X_train_scaled, y_train)
+        y_pred = model.predict(X_test_scaled)
+        accuracy = accuracy_score(y_test, y_pred)
+        accuracy_scores[1].append(accuracy)
+        print(f'{name} Genauigkeit: {accuracy:.4f}')
+
+
+    # Ergebnisse visualisieren
+    plt.figure(figsize=(15, 6))
+    plt.plot(svm_models_standart.keys(), accuracy_scores[0], color='skyblue')
+    plt.plot(svm_models_balanced.keys(), accuracy_scores[1], color='orange')
+    plt.xticks(rotation=45)
+    plt.xlabel('Modelle')
+    plt.ylabel('Genauigkeit')
+    plt.legend(['unbalanced', 'balanced'])
+    plt.title('Vergleich von SVM-Modellen balanced/unbalanced')
+    #plt.show()
+
+    # Generate a random filename
+
+    filename = f"plot_{int(time.time())}.png"
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop/Test_SVM_balanced_unbalanced")
+    # Überprüfen, ob das Verzeichnis vorhanden ist, andernfalls erstellen
+    if not os.path.exists(desktop_path):
+        os.makedirs(desktop_path)
+    plt.savefig(os.path.join(desktop_path, filename))
+ 
+# linear SVM (C)
+def get_accuracy_svm3():
+    
+    svm_models_balanced = {
+        "SVM - C=0.1, linear": SVC(kernel='linear', C=0.1, class_weight='balanced'),
+        "SVM - C=0.5, linear": SVC(kernel='linear', C=0.5, class_weight='balanced'),
+        "SVM - C=1, linear": SVC(kernel='linear', C=1, class_weight='balanced'),
+        "SVM - C=5, linear": SVC(kernel='linear', C=5, class_weight='balanced'),
+        "SVM - C=10, linear": SVC(kernel='linear', C=10, class_weight='balanced'),
+        "SVM - C=50, linear": SVC(kernel='linear', C=50, class_weight='balanced'),
+    }
+
+    # Neuronale Netz-Modelle trainieren und bewerten
+
+    accuracy_scores = []
+    X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+    
+    for name, model in svm_models_balanced.items():
+        model.fit(X_train_scaled, y_train)
+        y_pred = model.predict(X_test_scaled)
+        accuracy = accuracy_score(y_test, y_pred)
+        accuracy_scores.append(accuracy)
+        print(f'{name} Genauigkeit: {accuracy:.4f}')
+
+
+    # Ergebnisse visualisieren
+    plt.figure(figsize=(15, 6))
+    plt.plot(svm_models_balanced.keys(), accuracy_scores, color='skyblue')
+    plt.xticks(rotation=45)
+    plt.xlabel('Modelle')
+    plt.ylabel('Genauigkeit')
+    plt.title('Vergleich von linear SVM-Modellen (C)')
+    plt.show()
+
+    # Generate a random filename
+
+    filename = f"plot_{int(time.time())}.png"
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop/Test_linear_SVM_C") 
+    # Überprüfen, ob das Verzeichnis vorhanden ist, andernfalls erstellen
+    if not os.path.exists(desktop_path):
+        os.makedirs(desktop_path)
+    plt.savefig(os.path.join(desktop_path, filename))
+ 
+# rbf SVM (gamma)
+def get_accuracy_svm4():
+    
+    svm_models_rbf_c1 = {
+        "SVM - C=1, rbf": SVC(kernel='rbf', C=1),
+        "SVM - C=1, rbf, gamma=0.01": SVC(kernel='rbf', C=1, gamma=0.01),
+        "SVM - C=1, rbf, gamma=0.1": SVC(kernel='rbf', C=1, gamma=0.1),
+        "SVM - C=1, rbf, gamma=1": SVC(kernel='rbf', C=1, gamma=1),
+        "SVM - C=1, rbf, gamma=10": SVC(kernel='rbf', C=1, gamma=10),
+    }
+    
+    svm_models_rbf_c10 = {
+        "SVM - C=1, rbf": SVC(kernel='rbf', C=10),
+        "SVM - C=1, rbf, gamma=0.01": SVC(kernel='rbf', C=10, gamma=0.01),
+        "SVM - C=1, rbf, gamma=0.1": SVC(kernel='rbf', C=10, gamma=0.1),
+        "SVM - C=1, rbf, gamma=1": SVC(kernel='rbf', C=10, gamma=1),
+        "SVM - C=1, rbf, gamma=10": SVC(kernel='rbf', C=10, gamma=10),
+    }
+
+    # Neuronale Netz-Modelle trainieren und bewerten
+
+    accuracy_scores = [[],[]]
+    X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+    
+    for name, model in svm_models_rbf_c1.items():
+        model.fit(X_train_scaled, y_train)
+        y_pred = model.predict(X_test_scaled)
+        accuracy = accuracy_score(y_test, y_pred)
+        accuracy_scores[0].append(accuracy)
+        print(f'{name} Genauigkeit: {accuracy:.4f}')
+        
+    for name, model in svm_models_rbf_c10.items():
+        model.fit(X_train_scaled, y_train)
+        y_pred = model.predict(X_test_scaled)
+        accuracy = accuracy_score(y_test, y_pred)
+        accuracy_scores[1].append(accuracy)
+        print(f'{name} Genauigkeit: {accuracy:.4f}')
+
+
+    # Ergebnisse visualisieren
+    plt.figure(figsize=(15, 6))
+    plt.plot(["-","0,01","0,1","1","10"], accuracy_scores[0], color='skyblue')
+    plt.plot(["-","0,01","0,1","1","10"], accuracy_scores[1], color='orange')
+    plt.xticks(rotation=45)
+    plt.legend(['C=1', 'C=10'])
+    plt.xlabel('Modelle')
+    plt.ylabel('Genauigkeit')
+    plt.title('Vergleich von rbf SVM-Modellen (gamma & C)')
+    plt.show()
+
+    # Generate a random filename
+
+    filename = f"plot_{int(time.time())}.png"
+    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop/Test_rbf_SVM_gamma_C") 
+    # Überprüfen, ob das Verzeichnis vorhanden ist, andernfalls erstellen
+    if not os.path.exists(desktop_path):
+        os.makedirs(desktop_path)
+    plt.savefig(os.path.join(desktop_path, filename))
+ 
+
+
+
+# versch. Hyperparameter
 def get_accuracy_knn():
     # KNN-Modelle mit verschiedenen Hyperparametern definieren
     knn_models = {
@@ -557,7 +773,46 @@ def get_accuracy_knn():
     plt.ylabel('Genauigkeit')
     plt.title('KNN-Modellvergleich mit verschiedenen Hyperparametern')
     plt.show()
-    
+ 
+# versch. Hyperparameter (x100)
+def get_accuracy_knn2():
+    # KNN-Modelle mit verschiedenen Hyperparametern definieren
+    knn_models = {
+        "KNN - n_neighbors=3, uniform": KNeighborsClassifier(n_neighbors=3, weights='uniform'),
+        "KNN - n_neighbors=5, uniform": KNeighborsClassifier(n_neighbors=5, weights='uniform'),
+        "KNN - n_neighbors=7, uniform": KNeighborsClassifier(n_neighbors=7, weights='uniform'),
+        "KNN - n_neighbors=3, distance": KNeighborsClassifier(n_neighbors=3, weights='distance'),
+        "KNN - n_neighbors=5, distance": KNeighborsClassifier(n_neighbors=5, weights='distance'),
+        "KNN - n_neighbors=7, distance": KNeighborsClassifier(n_neighbors=7, weights='distance'),
+        "KNN - n_neighbors=5, ball_tree": KNeighborsClassifier(n_neighbors=5, algorithm='ball_tree'),
+        "KNN - n_neighbors=5, kd_tree": KNeighborsClassifier(n_neighbors=5, algorithm='kd_tree'),
+        "KNN - n_neighbors=5, brute": KNeighborsClassifier(n_neighbors=5, algorithm='brute')
+    }
 
-while True:
-    get_accuracy_nn9()
+    # KNN-Modelle trainieren und bewerten
+    accuracy_scores = []
+    
+    for name, model in knn_models.items():
+        accuracies = []
+        for _ in range(100):
+            X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+            model.fit(X_train_scaled, y_train)
+            y_pred = model.predict(X_test_scaled)
+            accuracy = accuracy_score(y_test, y_pred)
+            accuracies.append(accuracy)
+        average_accuracy = sum(accuracies) / len(accuracies)
+        accuracy_scores.append(average_accuracy)
+        print(f'{name} Durchschnittliche Genauigkeit: {average_accuracy:.4f}')
+
+    # Ergebnisse visualisieren
+    plt.figure(figsize=(15, 6))
+    plt.plot(knn_models.keys(), accuracy_scores, marker='o', linestyle='-', color='skyblue')
+    plt.xticks(rotation=45)
+    plt.ylabel('Durchschnittliche Genauigkeit')
+    plt.title('KNN-Modellvergleich mit verschiedenen Hyperparametern (x100)')
+    plt.show()
+
+
+
+get_accuracy_nn9()
+    
