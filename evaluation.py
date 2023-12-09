@@ -91,9 +91,7 @@ def generate_cross_val_scores(models, mean_from=10):
     for name, model in models.items():
         accuracies = []
         for _ in range(mean_from):
-            X_train_scaled, X_test_scaled, y_train, y_test = test_data()
-            model.fit(X_train_scaled, y_train)
-            accuracy = cross_val_score(model, X_test_scaled, y_test, cv=5, n_jobs=-1)
+            accuracy = cross_val_score(model, X, y, cv=5, n_jobs=-1)
             accuracies.append(accuracy)
 
         average_accuracy = np.mean(accuracies)
