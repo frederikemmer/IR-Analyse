@@ -331,7 +331,7 @@ def test_nn(*args, mean_from=10):
         
     if "learn" in args:
         # Test neural network mit verschiedenen "learning_rate_init" Werten
-        neural_network_scores = test_neural_network(learning_rate_init=[0.0001, 0.001, 0.01, 0.1, 1, 10, 100], mean_from=mean_from)
+        neural_network_scores = test_neural_network(learning_rate_init=[0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Learning Rate", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Learning Rate-Werten",
                             savefig=True, filename="neural_network_learning_rate")    
@@ -341,8 +341,8 @@ def test_nn(*args, mean_from=10):
 #test_linear_regression("fit", "copy", mean_from=10)
 
 #test_nn("layouts", "neurons", "layers", "activation", "solver", "alpha", mean_from=10)
-#test_nn("learn", mean_from=10)
-test_nn("layouts", mean_from=10)
+test_nn("learn", mean_from=10)
+#test_nn("layouts", mean_from=10)
 #test_nn("alpha", mean_from=10)
 #test_nn("neurons", mean_from=10)
 #test_nn("layers", mean_from=10)
