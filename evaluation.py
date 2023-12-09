@@ -188,15 +188,16 @@ def knn(n_neighbors=[3], weights=['uniform'], algorithm=['auto'], leaf_size=[30]
     accuracy_scores = generate_cross_val_scores(models, mean_from=mean_from)
     return accuracy_scores
 
-def test_neural_network(hidden_layers=[(100,)], activation=['relu'], solver=['adam'], alpha=[0.01], mean_from=10):
+def test_neural_network(hidden_layers=[(100,)], activation=['logistic'], solver=['adam'], alpha=[0.001], learning_rate_init=[0.0001],mean_from=10):
     models = {}
 
     for layers in hidden_layers:
         for act in activation:
             for solve in solver:
                 for a in alpha:
-                    model_name = f"Neural Network - hidden_layers={layers}, activation={act}, solver={solve}, alpha={a}"
-                    models[model_name] = MLPClassifier(hidden_layer_sizes=layers, activation=act, solver=solve, alpha=a, max_iter=5000)
+                    for learning_rate in learning_rate_init:
+                        model_name = f"Neural Network - hidden_layers={layers}, activation={act}, solver={solve}, alpha={a}, init_l_rate={learning_rate}"
+                        models[model_name] = MLPClassifier(hidden_layer_sizes=layers, activation=act, solver=solve, alpha=a,max_iter=5000, learning_rate_init=learning_rate)
 
     accuracy_scores = generate_cross_val_scores(models, mean_from=mean_from)
     return accuracy_scores
@@ -288,21 +289,21 @@ def test_knn(*args, mean_from=10):
 def test_nn(*args, mean_from=10):
     if "layouts" in args:
         # Test neural network mit verschiedenen "hidden_layers" Werten
-        neural_network_scores = test_neural_network(hidden_layers=[(100,), (50, 50), (25, 25, 25)], mean_from=mean_from)
+        neural_network_scores = test_neural_network(hidden_layers=[(512, ), (512, 200, 100), (512, 200), (512, 256, 128), (512, 256, 128, 64, 32, 16)], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Hidden Layers", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Hidden Layers",
                             savefig=True, filename="neural_network_layouts")
 
     if "neurons" in args:
         # Test neural network mit verschiedenen "hidden_layers" Werten
-        neural_network_scores = test_neural_network(hidden_layers=[(10,), (25, ), (50, ), (75, ), (100, ), (150,), (200, ), (500, ), (1000, )], mean_from=mean_from)
+        neural_network_scores = test_neural_network(hidden_layers=[(10,), (25, ), (50, ), (75, ), (100, ), (150,), (200, ), (500, ), (512, ), (1000, )], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Hidden Layers", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Hidden Layers",
                             savefig=True, filename="neural_network_neurons")
 
     if "layers" in args:
         # Test neural network mit verschiedenen "hidden_layers" Werten
-        neural_network_scores = test_neural_network(hidden_layers=[(100,), (100, 100), (100, 100, 100), (100, 100, 100, 100), (100, 100, 100, 100, 100)], mean_from=mean_from)
+        neural_network_scores = test_neural_network(hidden_layers=[(100,), (100, 100), (100, 100, 100), (100, 100, 100, 100), (100, 100, 100, 100, 100), (100, 100, 100, 100, 100, 100), (100, 100, 100, 100, 100, 100, 100)], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Hidden Layers", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Hidden Layers",
                             savefig=True, filename="neural_network_layers")
@@ -323,15 +324,30 @@ def test_nn(*args, mean_from=10):
 
     if "alpha" in args:
         # Test neural network mit verschiedenen "alpha" Werten
-        neural_network_scores = test_neural_network(alpha=[0.0001, 0.001, 0.01], mean_from=mean_from)
+        neural_network_scores = test_neural_network(alpha=[0.0001, 0.001, 0.01, 0.1, 1, 10, 100], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Alpha", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Alpha-Werten",
                             savefig=True, filename="neural_network_alpha")
+        
+    if "learn" in args:
+        # Test neural network mit verschiedenen "learning_rate_init" Werten
+        neural_network_scores = test_neural_network(learning_rate_init=[0.0001, 0.001, 0.01, 0.1, 1, 10, 100], mean_from=mean_from)
+        plot_accuracy_scores(neural_network_scores, xlabel="Learning Rate", ylabel="Genauigkeit",
+                            title="Genauigkeit des Neural Network mit verschiedenen Learning Rate-Werten",
+                            savefig=True, filename="neural_network_learning_rate")    
+        
 
 
 #test_linear_regression("fit", "copy", mean_from=10)
-#test_nn("layouts", "layers", "activation", "solver", "alpha", mean_from=10)
+
+#test_nn("layouts", "neurons", "layers", "activation", "solver", "alpha", mean_from=10)
+#test_nn("learn", mean_from=10)
+test_nn("layouts", mean_from=10)
+#test_nn("alpha", mean_from=10)
+#test_nn("neurons", mean_from=10)
+#test_nn("layers", mean_from=10)
+
 #test_svm("c", "kernel", "gamma", mean_from=10)
 
-#test_knn("n", mean_from=10)
-test_knn("n", "weights", "algo", "leaf", "p", mean_from=10)
+#test_knn("p", mean_from=10)
+#test_knn("n", "weights", "algo", "leaf", "p", mean_from=10)
