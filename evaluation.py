@@ -62,6 +62,7 @@ def test_data():
 
 test_data()
 
+
 # Bewertung der Genauigkeit
 def generate_accuracy_scores(models, mean_from=10):
     index = 0
@@ -104,6 +105,26 @@ def generate_cross_val_scores(models, mean_from=10):
         
     return accuracy_scores
 
+def cv_score_ez(model, mean_from=10):
+    accuracies = []
+    for _ in range(mean_from):
+        accuracy = cross_val_score(model, X, y, cv=5, n_jobs=-1)
+        accuracies.append(accuracy)
+
+    average_accuracy = np.mean(accuracies)
+    return average_accuracy
+
+def acc_score_ez(model, mean_from=10):
+    accuracies = []
+    for _ in range(mean_from):
+        X_train_scaled, X_test_scaled, y_train, y_test = test_data()
+        model.fit(X_train_scaled, y_train)
+        accuracy = model.score(X_test_scaled, y_test)
+        accuracies.append(accuracy)
+
+    average_accuracy = np.mean(accuracies)
+    return average_accuracy
+
 # Plot Generierung
 def plot_accuracy_scores(*accuracy_scores, xlabel, ylabel, title,  savefig=False, filename=None):
     plt.figure(figsize=(15, 10), layout='tight', dpi=100) 
@@ -125,7 +146,6 @@ def plot_accuracy_scores(*accuracy_scores, xlabel, ylabel, title,  savefig=False
         plt.show()
 
 
-
 # berechnende Funktionen für jeweilige Modelle
 def logitstic_regression(c_values=[0.01, 0.05, 0.1, 0.5, 1, 2, 5], max_iter=5000, mean_from=10):
     # Modelle mit verschiedenen Parametern definieren
@@ -138,7 +158,7 @@ def logitstic_regression(c_values=[0.01, 0.05, 0.1, 0.5, 1, 2, 5], max_iter=5000
     accuracy_scores = generate_cross_val_scores(models, mean_from=mean_from)
     return accuracy_scores
 
-def linear_regression(fit_intercept=True, copy_X=True, mean_from=10):
+def linear_regression(fit_intercept=True, copy_X=False, mean_from=10):
     # Modelle mit verschiedenen Parametern definieren
     models = {}
 
@@ -157,10 +177,10 @@ def linear_regression(fit_intercept=True, copy_X=True, mean_from=10):
     else:
         pass
 
-    accuracy_scores = generate_cross_val_scores(models, mean_from=mean_from)
+    accuracy_scores = generate_accuracy_scores(models, mean_from=mean_from)
     return accuracy_scores
 
-def svm(c_values=[50], kernel_values=['rbf'], gamma_values=['scale'], mean_from=10):
+def svm(c_values=[50], kernel_values=['rbf'], gamma_values=[0.001], mean_from=10):
     # Modelle mit verschiedenen Parametern definieren
     models = {}
 
@@ -168,12 +188,12 @@ def svm(c_values=[50], kernel_values=['rbf'], gamma_values=['scale'], mean_from=
         for kernel in kernel_values:
             for gamma in gamma_values:
                 model_name = f"SVM - C={c}, Kernel={kernel}, Gamma={gamma}"
-                models[model_name] = SVC(kernel=kernel, C=c, gamma=gamma, class_weight='balanced', n_jobs=-1)
+                models[model_name] = SVC(kernel=kernel, C=c, gamma=gamma, class_weight='balanced')
 
     accuracy_scores = generate_cross_val_scores(models, mean_from=mean_from)
     return accuracy_scores
 
-def knn(n_neighbors=[3], weights=['uniform'], algorithm=['auto'], leaf_size=[30], p=[2], mean_from=10):
+def knn(n_neighbors=[3], weights=['uniform'], algorithm=['auto'], leaf_size=[10], p=[2], mean_from=10):
     # Modelle mit verschiedenen Parametern definieren
     models = {}
 
@@ -188,7 +208,7 @@ def knn(n_neighbors=[3], weights=['uniform'], algorithm=['auto'], leaf_size=[30]
     accuracy_scores = generate_cross_val_scores(models, mean_from=mean_from)
     return accuracy_scores
 
-def test_neural_network(hidden_layers=[(100,)], activation=['logistic'], solver=['adam'], alpha=[0.001], learning_rate_init=[0.0001],mean_from=10):
+def nn(hidden_layers=[(511,)], activation=['logistic'], solver=['adam'], alpha=[0.001], learning_rate_init=[0.0001], mean_from=10):
     models = {}
 
     for layers in hidden_layers:
@@ -209,7 +229,7 @@ def test_neural_network(hidden_layers=[(100,)], activation=['logistic'], solver=
 def test_svm(*args, mean_from=10):
     if "c" in args:
         # Test svm mit verschiedenen "C" Werten
-        svm_scores = svm(c_values=[ 20, 30, 40, 50, 100, 250, 500], mean_from=mean_from)
+        svm_scores = svm(c_values=[ 20, 30, 40, 50, 100, 250, 500, 1000], mean_from=mean_from)
         plot_accuracy_scores(svm_scores, xlabel="C", ylabel="Genauigkeit",
                             title="Genauigkeit der SVM mit verschiedenen C-Werten",
                             savefig=True, filename="svm_c")
@@ -223,7 +243,7 @@ def test_svm(*args, mean_from=10):
         
     if "gamma" in args:    
         # Test svm mit verschiedenen "Gamma" Werten
-        svm_scores = svm(gamma_values=[0.01, 0.05, 0.1, 0.5, 1, 2, 5], mean_from=mean_from)
+        svm_scores = svm(gamma_values=[0.0001, 0.0005, 0.001, 0.01, 0.1, 1], mean_from=mean_from)
         plot_accuracy_scores(svm_scores, xlabel="Gamma", ylabel="Genauigkeit",
                             title="Genauigkeit der SVM mit verschiedenen Gamma-Werten",
                             savefig=True, filename="svm_gamma")
@@ -289,65 +309,132 @@ def test_knn(*args, mean_from=10):
 def test_nn(*args, mean_from=10):
     if "layouts" in args:
         # Test neural network mit verschiedenen "hidden_layers" Werten
-        neural_network_scores = test_neural_network(hidden_layers=[(512, ), (512, 200, 100), (512, 200), (512, 256, 128), (512, 256, 128, 64, 32, 16)], mean_from=mean_from)
+        neural_network_scores = nn(hidden_layers=[(511, ), (511, 200), (511, 200, 100), (511, 200, 100, 50), (511, 256), (511, 256, 127), (511, 256, 127, 64), (511, 256, 128), (511, 256, 128, 64)], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Hidden Layers", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Hidden Layers",
-                            savefig=True, filename="neural_network_layouts")
+                            savefig=True, filename="nn_layouts")
+
+    if "layouts_512" in args:
+        # Test neural network mit verschiedenen "hidden_layers" Werten
+        neural_network_scores = nn(hidden_layers=[(512, ), (512, 200), (512, 200, 100), (512, 200, 100, 50), (512, 256), (512, 256, 127), (512, 256, 127, 64), (512, 256, 128), (512, 256, 128, 64)], mean_from=mean_from)
+        plot_accuracy_scores(neural_network_scores, xlabel="Hidden Layers", ylabel="Genauigkeit",
+                            title="Genauigkeit des Neural Network mit verschiedenen Hidden Layers",
+                            savefig=True, filename="nn_layouts")
 
     if "neurons" in args:
         # Test neural network mit verschiedenen "hidden_layers" Werten
-        neural_network_scores = test_neural_network(hidden_layers=[(10,), (25, ), (50, ), (75, ), (100, ), (150,), (200, ), (500, ), (512, ), (1000, )], mean_from=mean_from)
+        neural_network_scores = nn(hidden_layers=[(10,), (25, ), (50, ), (75, ), (100, ), (150,), (200, ), (500, ), (512, ), (1000, )], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Hidden Layers", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Hidden Layers",
-                            savefig=True, filename="neural_network_neurons")
+                            savefig=True, filename="nn_neurons")
+        
+    if "neurons512_" in args:
+        # Test neural network mit verschiedenen "hidden_layers" Werten 
+        neural_network_scores = nn(hidden_layers=[(500,), (505,), (510,), (511,), (512, ), (513,), (515,), (520,), (550, )], mean_from=mean_from)
+        plot_accuracy_scores(neural_network_scores, xlabel="Hidden Layers", ylabel="Genauigkeit",
+                            title="Genauigkeit des Neural Network mit verschiedenen Hidden Layers",
+                            savefig=True, filename="nn_neurons")
 
     if "layers" in args:
         # Test neural network mit verschiedenen "hidden_layers" Werten
-        neural_network_scores = test_neural_network(hidden_layers=[(100,), (100, 100), (100, 100, 100), (100, 100, 100, 100), (100, 100, 100, 100, 100), (100, 100, 100, 100, 100, 100), (100, 100, 100, 100, 100, 100, 100)], mean_from=mean_from)
+        neural_network_scores = nn(hidden_layers=[(100,), (100, 100), (100, 100, 100), (100, 100, 100, 100), (100, 100, 100, 100, 100), (100, 100, 100, 100, 100, 100), (100, 100, 100, 100, 100, 100, 100)], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Hidden Layers", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Hidden Layers",
-                            savefig=True, filename="neural_network_layers")
+                            savefig=True, filename="nn_layers")
 
     if "activation" in args:
         # Test neural network mit verschiedenen "activation" Werten
-        neural_network_scores = test_neural_network(activation=['logistic', 'identity', 'relu', 'tanh'], mean_from=mean_from)
+        neural_network_scores = nn(activation=['logistic', 'identity', 'relu', 'tanh'], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Activation", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Activation-Werten",
-                            savefig=True, filename="neural_network_activation")
+                            savefig=True, filename="nn_activation")
 
     if "solver" in args:
         # Test neural network mit verschiedenen "solver" Werten
-        neural_network_scores = test_neural_network(solver=['adam', 'sgd'], mean_from=mean_from)
+        neural_network_scores = nn(solver=['adam', 'sgd'], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Solver", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Solver-Werten",
-                            savefig=True, filename="neural_network_solver")
+                            savefig=True, filename="nn_solver")
 
     if "alpha" in args:
         # Test neural network mit verschiedenen "alpha" Werten
-        neural_network_scores = test_neural_network(alpha=[0.0001, 0.001, 0.01, 0.1, 1, 10, 100], mean_from=mean_from)
+        neural_network_scores = nn(alpha=[0.0001, 0.0005, 0.001, 0.025, 0.05, 0.075, 0.01, 0.1, 1], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Alpha", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Alpha-Werten",
-                            savefig=True, filename="neural_network_alpha")
+                            savefig=True, filename="nn_alpha)")
         
     if "learn" in args:
         # Test neural network mit verschiedenen "learning_rate_init" Werten
-        neural_network_scores = test_neural_network(learning_rate_init=[0.0001, 0.001, 0.01, 0.1, 1, 10, 100], mean_from=mean_from)
+        neural_network_scores = nn(learning_rate_init=[0.0001, 0.001, 0.01, 0.1, 1, 10, 100], mean_from=mean_from)
         plot_accuracy_scores(neural_network_scores, xlabel="Learning Rate", ylabel="Genauigkeit",
                             title="Genauigkeit des Neural Network mit verschiedenen Learning Rate-Werten",
-                            savefig=True, filename="neural_network_learning_rate")    
+                            savefig=True, filename="nn_learning_rate")    
         
+
+def compare_all():
+    # Vergleich aller Modelle
+
+    l_reg_standart = acc_score_ez(LinearRegression(fit_intercept=True, copy_X=False, n_jobs=-1))
+    print(f"l_reg_standart   - 1/8 - Genauigkeit: {l_reg_standart:.4f}")
+    svm_standart = cv_score_ez(SVC())
+    print(f"svm_standart     - 2/8 - Genauigkeit: {svm_standart:.4f}")
+    knn_standart = cv_score_ez(KNeighborsClassifier(n_jobs=-1))
+    print(f"knn_standart     - 3/8 - Genauigkeit: {knn_standart:.4f}")
+    nn_standart = cv_score_ez(MLPClassifier())
+    print(f"nn_standart      - 4/8 - Genauigkeit: {nn_standart:.4f}")
+
+    l_reg_optimal = acc_score_ez(LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1))
+    print(f"l_reg_optimal    - 5/8 - Genauigkeit: {l_reg_optimal:.4f}")
+    svm_optimal = cv_score_ez(SVC(C=50, kernel='rbf', gamma=0.001))
+    print(f"svm_optimal      - 6/8 - Genauigkeit: {svm_optimal:.4f}")
+    knn_optimal = cv_score_ez(KNeighborsClassifier(n_neighbors=3, weights='uniform', algorithm='auto', leaf_size=10, p=2, n_jobs=-1))
+    print(f"knn_optimal      - 7/8 - Genauigkeit: {knn_optimal:.4f}")
+    nn_optimal = cv_score_ez(MLPClassifier(hidden_layer_sizes=(512, ), activation='logistic', solver='adam', alpha=0.001, max_iter=5000, learning_rate_init=0.0001), mean_from=5)
+    print(f"nn_optimal       - 8/8 - Genauigkeit: {nn_optimal:.4f}")
+    
+
+    # Plot generieren
+    plt.figure(figsize=(15, 10), layout='tight', dpi=100) 
+    
+    models = ["lineare Regression", "SVM", "KNN", "Neural Network"]
+    accuracy_standart = [l_reg_standart, svm_standart, knn_standart, nn_standart]
+    accuracy_optimal = [0, svm_optimal-svm_standart, knn_optimal-knn_standart, nn_optimal-nn_standart]
+
+    plt.stackplot(models, accuracy_standart, accuracy_optimal, labels=["standart", "optimiert"], colors=distinct_colors)
+    
+    # Matplotlib Einstellungen
+    plt.xticks(rotation=45)
+    plt.ylim(0.4, 1.0)
+    plt.yticks(np.arange(0.4, 1.0, 0.05))
+    plt.xlabel("Modelle")
+    plt.ylabel("Genauigkeit")
+    plt.legend(["standart", "optimiert"])
+    plt.title("ML Modelle im Vergleich")
+    plt.grid()
+    
+    # abspeichern
+    file_path = os.path.join(os.path.expanduser("~"), "Desktop", "Vergleich_Modelle.png")
+    plt.savefig(file_path)
+
 
 
 #test_linear_regression("fit", "copy")
 
 #test_nn("layouts", "neurons", "layers", "activation", "solver", "alpha")
-test_nn("learn")
+#test_nn("learn")
 #test_nn("layouts")
+#test_nn("layouts_512")
 #test_nn("alpha")
 #test_nn("neurons")
+#test_nn("neurons_512")
 #test_nn("layers")
 
 #test_svm("c", "kernel", "gamma")
+#test_svm("c")
+#test_svm("gamma")
 
 #test_knn("p")
 #test_knn("n", "weights", "algo", "leaf", "p")
+
+
+compare_all()
