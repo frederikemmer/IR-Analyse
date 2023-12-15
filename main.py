@@ -467,6 +467,7 @@ class io:
 # aktualisieren der Graphen
 class update_graphs:
     def axe_label(self=None):
+        live.cla()
         match x_axe_label:
             case "Wellenlänge":
                 x_values = Wellenlängen
@@ -475,7 +476,6 @@ class update_graphs:
                 x_values = Wellenzahlen
                 live.set_xlabel("Wellenzahl [cm^-1]")
 
-        live.cla()
         live.grid()
         live.set_title("Live-View")
         live.set_ylabel("Intensität [%]")

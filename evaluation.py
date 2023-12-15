@@ -144,6 +144,25 @@ def plot_accuracy_scores(*accuracy_scores, xlabel, ylabel, title,  savefig=False
         plt.savefig(file_path)
     else:
         plt.show()
+        
+def bar_accuracy_scores(*accuracy_scores, xlabel, ylabel, title,  savefig=False, filename=None):
+    plt.figure(figsize=(15, 10), layout='tight', dpi=100) 
+    
+    for i in range(len(accuracy_scores)):
+        plt.bar(accuracy_scores[i][0], accuracy_scores[i][1], color=distinct_colors[i])
+        
+    plt.xticks(rotation=45)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    # plt.legend()
+    plt.title(title)
+    plt.grid()
+    
+    if savefig:
+        file_path = os.path.join(os.path.expanduser("~"), "Desktop", filename)
+        plt.savefig(file_path)
+    else:
+        plt.show()
 
 
 # berechnende Funktionen für jeweilige Modelle
