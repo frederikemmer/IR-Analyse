@@ -507,7 +507,7 @@ class update_graphs:
 
         for i in values["-VERGLEICH_LIST-"]:
             # [1:] da erster Spektrum-Wert immer 0 ist
-            live.plot(x_values[1:], compute.relative_values(values=io.get_compare_spektrum(i)[1:]), color=compare_color)
+            live.plot(x_values[1:], compute.relative_values(values=io.get_compare_spektrum(i)[1:]), color=io.get_compare_color(i))
 
 # Funktionen zur Verbindung & Kommunikation durch MQTT
 class mqtt_connection:
