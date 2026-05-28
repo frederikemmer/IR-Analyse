@@ -210,7 +210,7 @@ class mt:
 
 # Ki Berechnungen, etc.
 class ML:
-    def prep_data(database_path="data/Sample-Database V1.csv", test_size=0.2, random_state=random.randint(1, 1000000)):
+    def prep_data(database_path="data/Sample-Database V1 (Sphere).csv", test_size=0.2, random_state=random.randint(1, 1000000)):
         data = pd.read_csv(database_path, sep=";")
 
         X = data.drop(columns=["#", "Material"]).values     # alles bis auf "Material"
@@ -467,6 +467,7 @@ class io:
 # aktualisieren der Graphen
 class update_graphs:
     def axe_label(self=None):
+        live.cla()
         match x_axe_label:
             case "Wellenlänge":
                 x_values = Wellenlängen
@@ -475,7 +476,6 @@ class update_graphs:
                 x_values = Wellenzahlen
                 live.set_xlabel("Wellenzahl [cm^-1]")
 
-        live.cla()
         live.grid()
         live.set_title("Live-View")
         live.set_ylabel("Intensität [%]")
@@ -507,7 +507,7 @@ class update_graphs:
 
         for i in values["-VERGLEICH_LIST-"]:
             # [1:] da erster Spektrum-Wert immer 0 ist
-            live.plot(x_values[1:], compute.relative_values(values=io.get_compare_spektrum(i)[1:]), color=compare_color)
+            live.plot(x_values[1:], compute.relative_values(values=io.get_compare_spektrum(i)[1:]), color=io.get_compare_color(i))
 
 # Funktionen zur Verbindung & Kommunikation durch MQTT
 class mqtt_connection:
