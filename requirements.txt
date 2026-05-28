@@ -6,3 +6,6 @@ numpy
 joblib
 paho-mqtt
 pyinstaller
+seabreeze
+pytest
+pytest-cov

@@ -1,0 +1,107 @@
+{
+  "version": "20260528_125110",
+  "created_at": "2026-05-28 12:52:42",
+  "database_path": "data/Sample-Database V1 (Sphere).csv",
+  "archive_dir": "models\\archiv",
+  "backups": [
+    {
+      "source": "models\\neural_5000.model",
+      "same_dir": "models\\neural_5000_v20260528_125110.model",
+      "archive": "models\\archiv\\neural_5000_v20260528_125110.model"
+    },
+    {
+      "source": "models\\knn_10.model",
+      "same_dir": "models\\knn_10_v20260528_125110.model",
+      "archive": "models\\archiv\\knn_10_v20260528_125110.model"
+    },
+    {
+      "source": "models\\l_reg.model",
+      "same_dir": "models\\l_reg_v20260528_125110.model",
+      "archive": "models\\archiv\\l_reg_v20260528_125110.model"
+    }
+  ],
+  "models": {
+    "neural": {
+      "label": "Neurales Netz",
+      "path": "models/neural_5000.model",
+      "search_candidates": 1,
+      "best_params": {
+        "model__hidden_layer_sizes": [
+          100
+        ],
+        "model__activation": "relu",
+        "model__alpha": 0.001
+      },
+      "cv_balanced_accuracy": 1.0,
+      "cv_accuracy": 1.0,
+      "validation_accuracy": 1.0,
+      "validation_balanced_accuracy": 1.0,
+      "samples": 800,
+      "features": 512,
+      "class_distribution": {
+        "1": 80,
+        "2": 120,
+        "3": 60,
+        "4": 40,
+        "5": 40,
+        "6": 140,
+        "7": 300,
+        "8": 20
+      },
+      "sample_prediction": "2"
+    },
+    "knn": {
+      "label": "KNN",
+      "path": "models/knn_10.model",
+      "search_candidates": 4,
+      "best_params": {
+        "model__n_neighbors": 7,
+        "model__p": 2,
+        "model__weights": "distance"
+      },
+      "cv_balanced_accuracy": 0.9989583333333332,
+      "cv_accuracy": 0.996875,
+      "validation_accuracy": 1.0,
+      "validation_balanced_accuracy": 1.0,
+      "samples": 800,
+      "features": 512,
+      "class_distribution": {
+        "1": 80,
+        "2": 120,
+        "3": 60,
+        "4": 40,
+        "5": 40,
+        "6": 140,
+        "7": 300,
+        "8": 20
+      },
+      "sample_prediction": "2"
+    },
+    "l_reg": {
+      "label": "Logistische Regression",
+      "path": "models/l_reg.model",
+      "search_candidates": 3,
+      "best_params": {
+        "model__C": 1.0,
+        "model__class_weight": "balanced"
+      },
+      "cv_balanced_accuracy": 0.9802742094861661,
+      "cv_accuracy": 0.9671875,
+      "validation_accuracy": 0.96875,
+      "validation_balanced_accuracy": 0.9776785714285714,
+      "samples": 800,
+      "features": 512,
+      "class_distribution": {
+        "1": 80,
+        "2": 120,
+        "3": 60,
+        "4": 40,
+        "5": 40,
+        "6": 140,
+        "7": 300,
+        "8": 20
+      },
+      "sample_prediction": "2"
+    }
+  }
+}
