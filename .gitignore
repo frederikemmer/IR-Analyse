@@ -22,6 +22,7 @@ ENV/
 .coverage
 .coverage.*
 htmlcov/
+pytest.ini
 
 # Jupyter
 .ipynb_checkpoints/
