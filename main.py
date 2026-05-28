@@ -99,7 +99,7 @@ mat_num = {
     "1": "PS",
     "2": "PET",
     "3": "PP",
-    "4": "HDPE",
+    "4": "HDPE",                                        # exisitiert im Trainingssatz nicht mehr -> Zusammenführung mit PE
     "5": "PE",
     "6": "PVC",
     "7": "Acrylglas",
@@ -578,7 +578,7 @@ def create_window(theme=selectable_themes[0], font=selectable_fonts[0], font_siz
                             key="-VERGLEICH_LIST-", select_mode="multiple", expand_x=True, expand_y=True,
                             enable_events=True)],
                 # hinzufügen/entfernen von Vergleichs-Spektren
-                [sg.Input(key="-COMPARE_INPUT-", enable_events=True, size=(40, 1), expand_x=True, pad=(5, 0)),
+                [sg.Input(key="-COMPARE_INPUT-", enable_events=True, size=(30, 1), expand_x=True, pad=(5, 0)),
                  sg.Combo(Materialien, key="-COMPARE_COMBO-", enable_events=True, default_value="auswählen",
                           size=(20, 1), expand_x=True),
                  ],
