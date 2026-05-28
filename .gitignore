@@ -27,7 +27,6 @@ htmlcov/
 .ipynb_checkpoints/
 
 # IDE / Editor
-.vscode/
 .idea/
 
 # OS files
