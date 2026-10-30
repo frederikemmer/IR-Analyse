@@ -37,3 +37,5 @@ Thumbs.db
 # Logs
 *.log
 data/RealtimeData_Relative__0__1.txt
+data/dark_spectrum.json
+data/source_spectrum.json
